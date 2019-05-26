@@ -14,3 +14,21 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+//ruta con parametro opcional
+Route::get('/pruebas/{nombre?}', function ($nombre) {
+     $texto = '<h1>Prueba texto desde una ruta</h1>';
+     $texto .= $nombre;
+    return $texto;
+});
+
+// pasando array de datos a un template
+Route::get('/pruebas2/{nombre?}', function ($nombre) {
+    $texto = '<h1>Prueba texto desde una ruta</h1>';
+    $texto .= $nombre.'dgsdgvfds';
+    return view('pruebas', array('texto' => $texto));
+});
+
+//en lugar del view podemos pasar el controlador
+Route::get('/animales', 'PruebasController@index');
