@@ -30,5 +30,23 @@ Route::get('/pruebas2/{nombre?}', function ($nombre) {
     return view('pruebas', array('texto' => $texto));
 });
 
+// RUTAS DE PRUEB
 //en lugar del view podemos pasar el controlador
 Route::get('/animales', 'PruebasController@index');
+Route::get('/test-orm', 'PruebasController@testorm');
+
+
+// Rutas del api
+
+// RUTAS DE PRUEB
+Route::get('usuario/pruebas', 'UsersController@pruebas');
+Route::get('categoria/pruebas', 'categoryController@pruebas');
+Route::get('entrada/pruebas', 'postController@pruebas');
+
+
+/*
+ * Metodos http comunes
+ * */
+// Buenas
+Route::post('/api/register', 'UsersController@register');
+Route::post('/api/login', 'UsersController@login');

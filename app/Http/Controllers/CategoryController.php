@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class CategoryController extends Controller
+{
+    public function pruebas(Request $request)
+    {
+
+        Return " Accion de pruebas de CATEGORY-CONTROLER";
+    }
+}
