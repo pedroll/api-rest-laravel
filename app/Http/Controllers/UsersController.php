@@ -122,8 +122,8 @@ class UsersController extends Controller
 
         //validar datos
         $validate = \Validator::make($params_array, [
-            'name' => 'required|alpha',
-            'email' => 'required|email|unique:users',            //  comprobar usuario existe
+            'name'  => 'required|alpha',
+            'email' => 'required|email',            //  comprobar usuario existe
         ]);
         if ($validate->fails()) {
             // valicacion ha fallado
@@ -135,13 +135,13 @@ class UsersController extends Controller
             );
         } else {
             //cifrar la password
-            $pwd      = hash('sha256', $params_array->password);
+            $pwd = hash('sha256', $params->password);
             $getToken = null;
             if (!empty($params_array->getToken)) {
                 $getToken = true;
             }
             //devolver token o datos
-            $signup = $jwt->signup($params_array->email, $pwd, $getToken);
+            $signup = $jwt->signup($params->email, $pwd, $getToken);
         }
 
 
@@ -153,5 +153,23 @@ class UsersController extends Controller
         // $pwd = Hash::make($password);
         //var_dump($pwd);die;
         return response()->json($signup, 200);
+    }
+
+
+    /**
+     * @param \equest $request
+     */
+    public function update(Request $request) {
+        $token = $request->header('Authorization');
+        $jwAuth = new JwtAuth();
+        $checktoken = $jwAuth->checkToken($token);
+
+        if ($checktoken) {
+            echo "<h1>Loging correcto</h1>";
+        } else {
+            echo "<h1>Loging incorrecto</h1>";
+        }
+
+        die;
     }
 }

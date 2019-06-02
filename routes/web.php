@@ -43,10 +43,10 @@ Route::get('usuario/pruebas', 'UsersController@pruebas');
 Route::get('categoria/pruebas', 'categoryController@pruebas');
 Route::get('entrada/pruebas', 'postController@pruebas');
 
-
 /*
  * Metodos http comunes
  * */
 // Buenas
 Route::post('/api/register', 'UsersController@register');
 Route::post('/api/login', 'UsersController@login');
+Route::post('/api/user/update', 'UsersController@update');
