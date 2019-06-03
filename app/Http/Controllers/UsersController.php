@@ -154,7 +154,8 @@ class UsersController extends Controller
 
 
     /**
-     * @param \equest $request
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request) {
 
@@ -240,4 +241,22 @@ class UsersController extends Controller
         }
 
     }
+
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function upload(Request $request) {
+
+
+        $data = array(
+            'status'  => 'error',
+            'code'    => '400',
+            'message' => 'El usuario esta identicado',
+        );
+
+        return response()->json($data, $data['code'])->header('Content-Type', 'text/plain');
+    }
+    
 }
