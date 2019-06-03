@@ -49,4 +49,4 @@ Route::get('entrada/pruebas', 'postController@pruebas');
 // Buenas
 Route::post('/api/register', 'UsersController@register');
 Route::post('/api/login', 'UsersController@login');
-Route::post('/api/user/update', 'UsersController@update');
+Route::put('/api/user/update', 'UsersController@update');

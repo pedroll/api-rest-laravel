@@ -19,8 +19,7 @@ class UsersController extends Controller
      * @param Request $request
      * @return string
      */
-    public function pruebas(Request $request)
-    {
+    public function pruebas(Request $request) {
 
         Return " Accion de pruebas de USER-CONTROLER";
     }
@@ -29,8 +28,7 @@ class UsersController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request)
-    {
+    public function register(Request $request) {
         // recoger datos del post dede un json o null
         /* $name = $request->input('name');
          $surname = $request->input('surname');*/
@@ -49,17 +47,17 @@ class UsersController extends Controller
         // podemos llamar al shorcut o utilizar el USE con el namespace
         if (empty($params_array)) {
             $data = array(
-                'status' => 'error',
-                'code' => '404',
+                'status'  => 'error',
+                'code'    => '404',
                 'message' => 'los udatos no son correctos'
             );
             return response()->json($data, 404);
         }
 
         $validate = \Validator::make($params_array, [
-            'name' => 'required|alpha',
-            'surname' => 'required|alpha',
-            'email' => 'required|email|unique:users',            //  comprobar usuario existe
+            'name'     => 'required|alpha',
+            'surname'  => 'required|alpha',
+            'email'    => 'required|email|unique:users',            //  comprobar usuario existe
             'password' => 'required',
         ]);
 
@@ -67,10 +65,10 @@ class UsersController extends Controller
         if ($validate->fails()) {
             // valicacion ha fallado
             $data = array(
-                'status' => 'error',
-                'code' => '404',
+                'status'  => 'error',
+                'code'    => '404',
                 'message' => 'El usuario no se ha creado',
-                'errors' => $validate->errors()
+                'errors'  => $validate->errors()
             );
             return response()->json($data, 404);
         } else {
@@ -84,19 +82,19 @@ class UsersController extends Controller
             // vomprobado en validacion
 
             //  crear usuario
-            $user           = new User();
-            $user->name     = $params_array['name'];
-            $user->surname  = $params_array['surname'];
-            $user->email    = $params_array['email'];
+            $user = new User();
+            $user->name = $params_array['name'];
+            $user->surname = $params_array['surname'];
+            $user->email = $params_array['email'];
             $user->password = $pwd;
-            $user->role     = 'ROLE_UESER';
+            $user->role = 'ROLE_UESER';
 
             // guardamos usuario
             $user->save();
 
             $data = array(
-                'status' => 'succes',
-                'code' => '200',
+                'status'  => 'succes',
+                'code'    => '200',
                 'message' => 'El usuario se ha creado'
             );
             return response()->json($data, 200);
@@ -111,13 +109,12 @@ class UsersController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         $jwt = new JwtAuth();
 
         // recibir datos post
-        $json         = $request->input('json', null);
-        $params       = json_decode($json);
+        $json = $request->input('json', null);
+        $params = json_decode($json);
         $params_array = json_decode($json, true);
 
         //validar datos
@@ -128,10 +125,10 @@ class UsersController extends Controller
         if ($validate->fails()) {
             // valicacion ha fallado
             $signup = array(
-                'status' => 'error',
-                'code' => '404',
+                'status'  => 'error',
+                'code'    => '404',
                 'message' => 'El usuario no se ha podido identificar',
-                'errors' => $validate->errors()
+                'errors'  => $validate->errors()
             );
         } else {
             //cifrar la password
@@ -160,16 +157,87 @@ class UsersController extends Controller
      * @param \equest $request
      */
     public function update(Request $request) {
+
+        // comprobar usuario autentificado
         $token = $request->header('Authorization');
+        $token = str_replace('"', '', $token);
+
         $jwAuth = new JwtAuth();
         $checktoken = $jwAuth->checkToken($token);
 
-        if ($checktoken) {
-            echo "<h1>Loging correcto</h1>";
+        // actualizar usuario
+        // recoger datos post
+        $json = $request->input('json', null);
+        $params = json_decode($json);
+        $params_array = json_decode($json, true);
+
+        if ($checktoken && !empty($params_array)) {
+
+            // sacar id usuario identificado
+            $user = $jwAuth->checkToken($token, true);
+
+
+            // Limpiar datos
+            $params_array = array_map('trim', $params_array);
+
+            // validar datos
+            // podemos llamar al shorcut o utilizar el USE con el namespace
+            if (empty($params_array)) {
+                $data = array(
+                    'status'  => 'error',
+                    'code'    => '404',
+                    'message' => 'los udatos no son correctos'
+                );
+                return response()->json($data, 404);
+            }
+
+            $validate = \Validator::make($params_array, [
+                'name'    => 'required|alpha',
+                'surname' => 'required|alpha',
+                'email'   => 'required|email|unique:users,' . $user->sub,            //  comprobar usuario existe excepto el id del usuario
+            ]);
+
+            // quitamos los que no queremos actualizar
+            unset($params_array['id']);
+            unset($params_array['password']);
+            unset($params_array['role']);
+            unset($params_array['created_at']);
+            unset($params_array['remember_token']);
+
+//            if ($validate->fails()) {
+//                // valicacion ha fallado
+//                $data = array(
+//                    'status'  => 'error',
+//                    'code'    => '404',
+//                    'message' => 'El usuario no se ha actualizado',
+//                    'errors'  => $validate->errors()
+//                );
+//                return response()->json($data, $data['code']);
+//            } else {
+//
+//                          }
+
+// actualizar usuario en base de datos
+            $user_update = User::where('id', $user->sub)->update($params_array);
+
+            // devolver array
+            $data = array(
+                'status'  => 'sucess',
+                'code'    => '200',
+                'user'    => $user,
+                'changes' => $params_array);
+            return response()->json($data, $data['code']);
+
         } else {
-            echo "<h1>Loging incorrecto</h1>";
+            $data = array(
+                'status'  => 'error',
+                'code'    => '400',
+                'message' => 'El usuario esta identicado',
+            );
+
+            return response()->json($data, $data['code']);
+
         }
 
-        die;
     }
 }
