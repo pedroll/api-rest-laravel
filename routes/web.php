@@ -49,5 +49,6 @@ Route::get('entrada/pruebas', 'postController@pruebas');
 // Buenas
 Route::post('/api/register', 'UsersController@register');
 Route::post('/api/login', 'UsersController@login');
-Route::put('/api/user/update', 'UsersController@update');
-Route::post('/api/user/upload', 'UsersController@upload');
+Route::put('/api/user/update', 'UsersController@update')->middleware(\App\Http\Middleware\ApiAuthMiddleware::class);
+// llamamos al middleeware creado para la ruta
+Route::post('/api/user/upload', 'UsersController@upload')->middleware(\App\Http\Middleware\ApiAuthMiddleware::class);

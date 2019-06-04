@@ -6,7 +6,6 @@ use App\Helpers\JwtAuth;
 use App\User;
 //use http\Message;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 
 /**
@@ -36,7 +35,7 @@ class UsersController extends Controller
         var_dump($json);
 
         //sacamos un json
-        $params = json_decode($json);
+        // $params = json_decode($json);
         // con el true sacamos array
         $params_array = json_decode($json, true);
 
@@ -160,19 +159,21 @@ class UsersController extends Controller
     public function update(Request $request) {
 
         // comprobar usuario autentificado
+        // nos lo hemos llevado al middleware
         $token = $request->header('Authorization');
         $token = str_replace('"', '', $token);
-
+        //
         $jwAuth = new JwtAuth();
-        $checktoken = $jwAuth->checkToken($token);
+        // $checktoken = $jwAuth->checkToken($token);
 
         // actualizar usuario
         // recoger datos post
         $json = $request->input('json', null);
-        $params = json_decode($json);
+        // $params = json_decode($json);
         $params_array = json_decode($json, true);
 
-        if ($checktoken && !empty($params_array)) {
+        // no hace falta comprobar $checktoken esta comprobado en middleware
+        if (!empty($params_array)) {
 
             // sacar id usuario identificado
             $user = $jwAuth->checkToken($token, true);
@@ -233,7 +234,7 @@ class UsersController extends Controller
             $data = array(
                 'status'  => 'error',
                 'code'    => '400',
-                'message' => 'El usuario esta identicado',
+                'message' => 'Error al subir imagen',
             );
 
             return response()->json($data, $data['code']);
@@ -253,11 +254,11 @@ class UsersController extends Controller
         $data = array(
             'status'  => 'error',
             'code'    => '400',
-            'message' => 'El usuario esta identicado',
+            'message' => 'Error al subir la imagen',
         );
 
         //return response()->json($data, $data['code'])->header('Content-Type', 'text/plain');
         return response()->json($data, $data['code']);
     }
-    
+
 }
