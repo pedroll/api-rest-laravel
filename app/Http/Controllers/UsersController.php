@@ -256,7 +256,8 @@ class UsersController extends Controller
             'message' => 'El usuario esta identicado',
         );
 
-        return response()->json($data, $data['code'])->header('Content-Type', 'text/plain');
+        //return response()->json($data, $data['code'])->header('Content-Type', 'text/plain');
+        return response()->json($data, $data['code']);
     }
     
 }
