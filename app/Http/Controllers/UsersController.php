@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\JwtAuth;
 use App\User;
 //use http\Message;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Request;
 
 
@@ -289,4 +290,46 @@ class UsersController extends Controller
 
     }
 
+    /**
+     * @param $filename
+     * @return \Illuminate\Http\JsonResponse|\Response
+     */
+    public function getImage($filename) {
+        $isset = \Storage::disk('users')->exists($filename);
+        try {
+            $file = \Storage::disk('users')->get($filename);
+        } catch (FileNotFoundException $e) {
+            $data = array(
+                'status'  => 'error',
+                'code'    => 400,
+                'message' => $e->getMessage(),
+            );
+            if (!$isset) $data['message'] = 'imagen no existe';
+
+            return response()->json($data, $data['code']);
+        }
+        // da erro al devolver objeto
+        return new \Response($file, 200);
+    }
+
+    public function detail($id) {
+        $user = User::find($id);
+        if (is_object($user)) {
+            $data = array(
+                'status' => 'success',
+                'code'   => 200,
+                'user'   => $user,
+            );
+
+        } else {
+            $data = array(
+                'status'  => 'error',
+                'code'    => 400,
+                'message' => 'El usuario no existe',
+            );
+        }
+
+        return response()->json($data, $data['code']);
+
+    }
 }

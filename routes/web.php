@@ -52,3 +52,5 @@ Route::post('/api/login', 'UsersController@login');
 Route::put('/api/user/update', 'UsersController@update')->middleware(\App\Http\Middleware\ApiAuthMiddleware::class);
 // llamamos al middleeware creado para la ruta
 Route::post('/api/user/upload', 'UsersController@upload')->middleware(\App\Http\Middleware\ApiAuthMiddleware::class);
+Route::get('/api/user/avatar/{filename}', 'UsersController@getImage');
+Route::get('/api/user/detail/{id}', 'UsersController@detail');
