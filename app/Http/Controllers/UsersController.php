@@ -247,18 +247,40 @@ class UsersController extends Controller
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function upload(Request $request) {
 
+        // recoger datos peticionm
+        $image = $request->file('file0');
 
-        $data = array(
-            'status'  => 'error',
-            'code'    => '400',
-            'message' => 'Error al subir la imagen',
-        );
+        // guardar imagen
+        if ($image) {
 
-        //return response()->json($data, $data['code'])->header('Content-Type', 'text/plain');
+            $image_name = time() . $image->getClientOriginalName();
+            // discos virtuales
+            \Storage::disk('users')->put($image_name, \File::get($image));
+
+            $data = array(
+                'status'  => 'success',
+                'code'    => '200',
+                'image'   => $image_name,
+                'message' => 'Imagen subida',
+            );
+
+        } else {
+
+            $data = array(
+                'status'  => 'error',
+                'code'    => '400',
+                'message' => 'Error al subir la imagen',
+            );
+
+
+        }
+
         return response()->json($data, $data['code']);
+
     }
 
 }
