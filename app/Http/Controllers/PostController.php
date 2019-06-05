@@ -88,6 +88,7 @@ class PostController extends Controller
 
         if ($validate->fails()) {
             $data['message'] = 'Faltan datos';
+            $data['errors'] = $validate->errors();
             return response()->json($data, $data['code']);
         }
 
@@ -109,5 +110,52 @@ class PostController extends Controller
 
         return response()->json($data, $data['code']);
 
+    }
+
+    public function update($id, Request $request) {
+
+        // por dfecto devolvemos error generico
+        $data = [
+            'status'  => 'error',
+            'code'    => 400,
+            'message' => 'Envia los datos correctamente',
+        ];
+
+        // recoger datos por post
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
+
+        if (empty($params_array)) return response()->json($data, $data['code']);
+
+        // validar datos
+        $validate = \Validator::make($params_array, [
+            'title'       => 'required',
+            'content'     => 'required',
+            'category_id' => 'required',
+            'image'       => 'required'
+        ]);
+
+        if ($validate->fails()) {
+            $data['message'] = 'Faltan datos';
+            $data['errors'] = $validate->errors();
+            return response()->json($data, $data['code']);
+        }
+
+        // quitar lo que no queremos actualizar
+        unset($params_array['id']);
+        unset($params_array['user_id']);
+        unset($params_array['created_at']);
+
+        // actualizar el registro
+        $POST = Post::where('id', $id)->update($params_array);
+
+        $data = [
+            'status' => 'success',
+            'code'   => 200,
+            'POST'   => $params_array,
+        ];
+
+        // devolver resultado
+        return response()->json($data, $data['code']);
     }
 }
