@@ -147,12 +147,14 @@ class PostController extends Controller
         unset($params_array['created_at']);
 
         // actualizar el registro
-        $POST = Post::where('id', $id)->update($params_array);
+        // al actualizar con el metodo updateOrCreate devuelbe el objeto en si
+        $post = Post::where('id', $id)->updateOrCreate($params_array);
 
         $data = [
-            'status' => 'success',
-            'code'   => 200,
-            'POST'   => $params_array,
+            'status'  => 'success',
+            'code'    => 200,
+            'changes' => $params_array,
+            'post'    => $post
         ];
 
         // devolver resultado
