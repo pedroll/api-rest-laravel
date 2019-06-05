@@ -47,7 +47,7 @@ class CategoryController extends Controller
             'name' => 'required'
         ]);
         // guardar categoria
-        if ($validate->fails() || isEmpty($params_array)) {
+        if ($validate->fails() || empty($params_array)) {
             $data = [
                 'status'  => 'error',
                 'code'    => 400,

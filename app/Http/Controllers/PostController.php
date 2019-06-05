@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\JwtAuth;
 use App\Post;
 use Illuminate\Http\Request;
 
@@ -53,4 +54,60 @@ class PostController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request) {
+
+        // por dfecto devolvemos error generico
+        $data = [
+            'status'  => 'error',
+            'code'    => 400,
+            'message' => 'Envia los datos correctamente',
+        ];
+
+        // recoger datos por post
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
+
+        if (empty($params_array)) return response()->json($data, $data['code']);
+
+        // conseguir usuario identificado
+        $jwAuth = new JwtAuth();
+        $token = $request->header('Authorization', null);
+        $user = $jwAuth->checkToken($token, true);
+
+        // validar datos
+        $validate = \Validator::make($params_array, [
+            'title'       => 'required',
+            'content'     => 'required',
+            'category_id' => 'required',
+            'image'       => 'required'
+        ]);
+
+        if ($validate->fails()) {
+            $data['message'] = 'Faltan datos';
+            return response()->json($data, $data['code']);
+        }
+
+        // guardar post
+        $post = new Post();
+        $post->user_id = $user->sub;
+        $post->category_id = $params_array['category_id'];
+        $post->title = $params_array['title'];
+        $post->content = $params_array['content'];
+        $post->image = $params_array['image'];
+        $post->save();
+
+        // devolver resultado
+        $data = [
+            'status' => 'success',
+            'code'   => 200,
+            'post'   => $post,
+        ];
+
+        return response()->json($data, $data['code']);
+
+    }
 }
