@@ -254,8 +254,13 @@ class UsersController extends Controller
         // recoger datos peticionm
         $image = $request->file('file0');
 
+        // validacion imagen
+
+        $validate = \Validator::make($request->all(), [
+            'file0' => 'required|image|mimes:jpg,jpeg,png,gif'
+        ], ['Tiene que ser una imagen valida']);
         // guardar imagen
-        if ($image) {
+        if ($image && !$validate->fails()) {
 
             $image_name = time() . $image->getClientOriginalName();
             // discos virtuales
@@ -271,9 +276,10 @@ class UsersController extends Controller
         } else {
 
             $data = array(
-                'status'  => 'error',
-                'code'    => '400',
-                'message' => 'Error al subir la imagen',
+                'status'   => 'error',
+                'code'     => '400',
+                'message'  => 'Error al subir la imagen',
+                'message2' => $validate->errors()->all()
             );
 
 
