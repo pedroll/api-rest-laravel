@@ -53,7 +53,7 @@ class CategoryController extends Controller
                 'code'    => 400,
                 'message' => 'La categoria no se ha guardado',
             ];
-            if (isEmpty($params_array)) $data['message'] = 'No has enviado ningun nombre de categoria';
+            if (empty($params_array)) $data['message'] = 'No has enviado ningun nombre de categoria';
         } else {
             $category = new Category();
             $category->name = $params_array['name'];
@@ -76,7 +76,42 @@ class CategoryController extends Controller
 
     //|        | DELETE    | api/category/{category}      | category.destroy | App\Http\Controllers\CategoryController@destroy | web                                       |
     //|        | PUT|PATCH | api/category/{category}      | category.update  | App\Http\Controllers\CategoryController@update  | web                                       |
+    public function update($id, Request $request) {
+        // recoger datos por post
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
 
+        // validar datos
+        $validate = \Validator::make($params_array, [
+            'name' => 'required'
+        ]);
+
+        // quitar lo que no queremos actualizar
+        unset($params_array['id']);
+        unset($params_array['created_at']);
+
+        // actualizar el registro
+        if ($validate->fails() || empty($params_array)) {
+            $data = [
+                'status'  => 'error',
+                'code'    => 400,
+                'message' => 'La categoria no se ha actualizado',
+            ];
+            if (empty($params_array)) $data['message'] = 'No has enviado ningun nombre de categoria para actualizar';
+        } else {
+
+            $category = Category::where('id', $id)->update($params_array);
+
+            $data = [
+                'status'   => 'success',
+                'code'     => 200,
+                'category' => $params_array,
+            ];
+        }
+
+        // devolver resultado
+        return response()->json($data, $data['code']);
+    }
     /**
      * |        | GET|HEAD  | api/category/{category}      | category.show    | App\Http\Controllers\CategoryController@show    | web                                       |
      * @param $id
