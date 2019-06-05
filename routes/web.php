@@ -39,14 +39,14 @@ Route::get('/test-orm', 'PruebasController@testorm');
 // Rutas del api
 
 // RUTAS DE PRUEB
-Route::get('usuario/pruebas', 'UsersController@pruebas');
-Route::get('categoria/pruebas', 'categoryController@pruebas');
-Route::get('entrada/pruebas', 'postController@pruebas');
+//Route::get('usuario/pruebas', 'UsersController@pruebas');
+//Route::get('categoria/pruebas', 'categoryController@pruebas');
+//Route::get('entrada/pruebas', 'postController@pruebas');
 
 /*
  * Metodos http comunes
  * */
-// Buenas
+// Rutas controlador usuariio
 Route::post('/api/register', 'UsersController@register');
 Route::post('/api/login', 'UsersController@login');
 Route::put('/api/user/update', 'UsersController@update')->middleware(\App\Http\Middleware\ApiAuthMiddleware::class);
@@ -54,3 +54,8 @@ Route::put('/api/user/update', 'UsersController@update')->middleware(\App\Http\M
 Route::post('/api/user/upload', 'UsersController@upload')->middleware(\App\Http\Middleware\ApiAuthMiddleware::class);
 Route::get('/api/user/avatar/{filename}', 'UsersController@getImage');
 Route::get('/api/user/detail/{id}', 'UsersController@detail');
+
+
+// Rutas controlador categorias
+// de tipo resource *******************
+Route::resource('/api/category', 'CategoryController');
