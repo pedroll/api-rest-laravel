@@ -160,4 +160,37 @@ class PostController extends Controller
         // devolver resultado
         return response()->json($data, $data['code']);
     }
+
+    /**
+     * @param $id
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function destroy($id, Request $request) {
+
+
+        // por dfecto devolvemos error generico
+        $data = [
+            'status'  => 'error',
+            'code'    => 400,
+            'message' => 'No se ha encontado post para borrar',
+        ];
+
+        // conseguir registro
+        $post = Post::find($id);
+
+        if (!$post) return response()->json($data, $data['code']);
+
+        // Borrarlo
+        $post->delete();
+        // devolver algo
+        $data = [
+            'status' => 'success',
+            'code'   => 200,
+            'post'   => $post
+        ];
+        return response()->json($data, $data['code']);
+
+    }
 }
