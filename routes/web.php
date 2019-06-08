@@ -62,3 +62,4 @@ Route::resource('/api/category', 'CategoryController');
 
 // Rutas del controlador de entradas
 Route::resource('/api/post', 'PostController');
+Route::post('/api/post/upload', 'PostController@upload');
