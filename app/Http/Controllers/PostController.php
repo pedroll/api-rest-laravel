@@ -8,6 +8,10 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
+/**
+ * Class PostController
+ * @package App\Http\Controllers
+ */
 class PostController extends Controller
 {
 
@@ -16,7 +20,13 @@ class PostController extends Controller
      * Cargamos el middleware auth excepto para metodos...
      */
     public function __construct() {
-        $this->middleware('\App\Http\Middleware\ApiAuthMiddleware', ['except' => ['index', 'show', 'getImage']]);
+        $this->middleware('api.auth', ['except' => [
+            'index',
+            'show',
+            'getImage',
+            'getPostsByCategory',
+            'getPostsByUser'
+        ]]);
     }
 
     /**
@@ -312,4 +322,35 @@ class PostController extends Controller
         return new Response($file, 200);
     }
 
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPostsByCategory($id) {
+
+        $posts = Post::where('category_id', $id)->get();
+
+
+        return response()->json([
+            'status' => 'success',
+            'code'   => 200,
+            'posts'  => $posts,
+        ], 200);
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPostsByUser($id) {
+        $posts = Post::where('user_id', $id)->get();
+
+
+        return response()->json([
+            'status' => 'success',
+            'code'   => 200,
+            'posts'  => $posts,
+        ], 200);
+    }
 }
