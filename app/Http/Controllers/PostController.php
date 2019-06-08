@@ -6,6 +6,7 @@ use App\Helpers\JwtAuth;
 use App\Post;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class PostController extends Controller
 {
@@ -15,7 +16,7 @@ class PostController extends Controller
      * Cargamos el middleware auth excepto para metodos...
      */
     public function __construct() {
-        $this->middleware('\App\Http\Middleware\ApiAuthMiddleware', ['except' => ['index', 'show']]);
+        $this->middleware('\App\Http\Middleware\ApiAuthMiddleware', ['except' => ['index', 'show', 'getImage']]);
     }
 
     /**
@@ -285,6 +286,30 @@ class PostController extends Controller
 
         return response()->json($data, $data['code']);
 
+    }
+
+
+    /**
+     * @param $filename
+     * @return Response
+     */
+    public function getImage($filename) {
+        $isset = \Storage::disk('images')->exists($filename);
+        try {
+            $file = \Storage::disk('images')->get($filename);
+        } catch (FileNotFoundException $e) {
+            $data = array(
+                'status' => 'error',
+                'code'   => 400,
+                'errors' => $e->getMessage(),
+            );
+            if (!$isset) $data['message'] = 'imagen no existe';
+
+            return response()->json($data, $data['code']);
+        }
+        // da erro al devolver objeto
+
+        return new Response($file, 200);
     }
 
 }
